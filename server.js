@@ -22,18 +22,11 @@ app.use(cors());
 // app.use(cors({ origin: 'http://localhost:5173' }));
 
 //probar conexion con base de datos
+
 sequelize
   .authenticate()
-  .then(() => {
-    console.log("Conexión a la base de datos establecida correctamente.");
-    return sequelize.sync(); // Sincronizar modelos con la base de datos
-  })
-  .then(() => {
-    console.log("Base de datos sincronizada.");
-  })
-  .catch((error) => {
-    console.error("Error al conectar con la base de datos:", error);
-  });
+  .then(() => console.log("✅ Conectado a PostgreSQL en Railway"))
+  .catch((error) => console.error("❌ Error de conexión:", error));
 
 /*
   sequelize.sync({ force: true }).then(async () => {

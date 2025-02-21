@@ -58,7 +58,7 @@ const PORT = process.env.PORT || 5000;
 
 
 // Servir archivos estáticos desde la carpeta dist
-app.use(express.static(path.join(__dirname, "../client/dist")));
+app.use(express.static(path.join(__dirname, "/dist")));
 
 // Cualquier ruta que no sea de la API devuelve index.html (para React Router)
 app.get("/", (req, res) => {

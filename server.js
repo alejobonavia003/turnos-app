@@ -5,6 +5,7 @@ import Contenido from "./models/Contenido.mjs";
 import { fileURLToPath } from "url";
 import cors from 'cors';
 import pg from "pg";
+import nodemailer from "nodemailer";
 
 
 
@@ -12,8 +13,9 @@ import pg from "pg";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const app = express();
 
+const app = express();
+app.use(express.json());
 
 // Habilitar CORS para todas las rutas
 app.use(cors());
@@ -91,8 +93,37 @@ app.get("/api/contenido/:clave", async (req, res) => {
 });
 
 
-app.get("/api/settings", (req, res) => {
-  res.json({ title: "Configuración", description: "Esto es una descripción" });
+
+
+app.post("/api/turnos", async (req, res) => {
+  console.log("req.body:  " + req.body);
+  const {nombre, apellidos, edad, telefono, email, residencia, disponibilidad, motivo, horario, tipoSesion, frecuencia, conocio, dudas} = req.body;
+
+  // Configuración de Nodemailer
+  
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "mantis.servicios.lby@gmail.com",
+      pass: "ivdx ddca qmhm yynn",
+    },
+  });
+
+  const mailOptions = {
+    from: "mantis.servicios.lby@gmail.com",
+    to: "bonaviaalejo@gmail.com",
+    subject: "Nuevo turno solicitado",
+    text: `Nombre: ${nombre} ${apellidos}\nTeléfono: ${telefono}\nEmail: ${email}\nHorario disponible: ${horario}\nMotivo de consulta: ${motivo}\nedad: ${edad}\nresidencia: ${residencia}\ndisponibilidad: ${disponibilidad}\nTipo de sesión: ${tipoSesion}\nFrecuencia: ${frecuencia}\n¿Cómo nos conociste?: ${conocio}\nDudas: ${dudas}`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ message: "Correo enviado con éxito" });
+  } catch (error) {
+    console.error("Error al enviar el correo:", error);
+    res.status(500).json({ message: "Error al enviar el correo" });
+  }
+     
 });
 
 app.listen(PORT, () => {

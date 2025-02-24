@@ -6,6 +6,8 @@ import { fileURLToPath } from "url";
 import cors from 'cors';
 import pg from "pg";
 import nodemailer from "nodemailer";
+import multer from "multer";
+
 
 
 
@@ -22,6 +24,10 @@ app.use(cors());
 
 // Si solo quieres habilitar CORS para un origen específico (por ejemplo, http://localhost:5173):
 // app.use(cors({ origin: 'http://localhost:5173' }));
+
+
+// Configurar Multer para subir archivos
+const upload = multer({ dest: "uploads/" });
 
 //probar conexion con base de datos
 
@@ -55,10 +61,25 @@ const PORT = process.env.PORT || 5000;
 // Servir archivos estáticos desde la carpeta dist
 app.use(express.static(path.join(__dirname, "/dist")));
 
+// segurdad para proteger la seccion de admin
+app.post('/api/login', (req, res) => {
+  const { password } = req.body;
+  
+  // La contraseña correcta está en las variables de entorno
+  const correctPassword = process.env.ADMIN_PASSWORD; 
+
+  if (password == correctPassword) {
+    res.json({ success: true });
+  } else {
+    res.status(401).json({ success: false, error: "Contraseña incorrecta" });
+  }
+});
+
 // Cualquier ruta que no sea de la API devuelve index.html (para React Router)
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
 });
+
 
 app.get("/api/contenidos", async (req, res) => {
   try {
@@ -124,6 +145,40 @@ app.post("/api/turnos", async (req, res) => {
     res.status(500).json({ message: "Error al enviar el correo" });
   }
      
+});
+
+// Actualizar contenido
+// Actualizar contenido
+app.put("/api/contenido/:clave", async (req, res) => {
+  const { clave } = req.params;
+  const { valor } = req.body;
+
+  try {
+    const [updated] = await Contenido.update(
+      { valor },
+      { where: { clave } }
+    );
+
+    if (updated) {
+      const contenido = await Contenido.findOne({ where: { clave } });
+      res.json(contenido);
+    } else {
+      res.status(404).json({ error: "Contenido no encontrado" });
+    }
+  } catch (error) {
+    console.error("Error al actualizar contenido:", error);
+    res.status(500).json({ error: "Error al actualizar contenido" });
+  }
+});
+
+
+app.post("/api/upload", upload.single("imagen"), (req, res) => {
+  // Aquí deberías subir el archivo a un servicio como AWS S3 o Cloudinary
+  // Por ahora devolvemos una URL temporal
+  res.json({ 
+    url: `/uploads/${req.file.filename}`,
+    message: "Implementa la subida real de archivos según tu proveedor de almacenamiento"
+  });
 });
 
 app.listen(PORT, () => {

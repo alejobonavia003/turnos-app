@@ -2,6 +2,8 @@ import express from 'express';
 const router = express.Router();
 import nodemailer from 'nodemailer';
 
+
+// Configura el transporter para enviar correos
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -10,6 +12,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// POST /api/turnos
+// Envia un correo con los datos del turno
 router.post('/', async (req, res) => {
   try {
     const { nombre, apellidos, email, telefono, horario, motivo } = req.body;

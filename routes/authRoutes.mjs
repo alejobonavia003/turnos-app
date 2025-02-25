@@ -9,6 +9,9 @@ const generateToken = (user) => {
   });
 };
 
+// POST /api/auth/login
+// si la contraceña es correcta, genera un token y lo devuelve
+// si no, devuelve un error 401
 router.post('/login', (req, res) => {
   const { password } = req.body;
   const correctPassword = process.env.ADMIN_PASSWORD;
@@ -36,7 +39,7 @@ export const verifyToken = (req, res, next) => {
 };
 
 
-// En authRoutes.mjs
+// verifica si el token es valido
 router.get('/verify', verifyToken, (req, res) => {
   res.json({ valid: true, user: req.user });
 });

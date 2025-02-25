@@ -2,16 +2,17 @@ import express from 'express';
 const router = express.Router();
 import Contenido from '../models/Contenido.mjs';
 
-
-router.get('/api', async (req, res) => {
+//get http://localhost:5000/api/contenidos devuelve todos los contenidos
+router.get('/', async (req, res) => {
   try {
     const contenidos = await Contenido.findAll();
     res.json(contenidos);
   } catch (error) {
-    res.status(500).json({ error: "Error al obtener contenidos" });
+    res.status(500).json({ error: "Error al obtener contenidos del header." });
   }
 });
 
+//get http://localhost:5000/api/:clave devuelve un contenido por clave
 router.get('/api/:clave', async (req, res) => {
   try {
     const contenido = await Contenido.findOne({ where: { clave: req.params.clave } });
@@ -21,6 +22,7 @@ router.get('/api/:clave', async (req, res) => {
   }
 });
 
+//put http://localhost:5000/api/contenidos actualiza un contenido
 router.put('/api/:clave', async (req, res) => {
   try {
     const [updated] = await Contenido.update(
@@ -33,5 +35,7 @@ router.put('/api/:clave', async (req, res) => {
     res.status(500).json({ error: "Error al actualizar" });
   }
 });
+
+
 
 export default router;

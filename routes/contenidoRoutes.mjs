@@ -12,7 +12,7 @@ router.get('/api', async (req, res) => {
   }
 });
 
-router.get('api/:clave', async (req, res) => {
+router.get('/api/:clave', async (req, res) => {
   try {
     const contenido = await Contenido.findOne({ where: { clave: req.params.clave } });
     contenido ? res.json(contenido) : res.status(404).json({ error: "No encontrado" });
@@ -21,7 +21,7 @@ router.get('api/:clave', async (req, res) => {
   }
 });
 
-router.put('api/:clave', async (req, res) => {
+router.put('/api/:clave', async (req, res) => {
   try {
     const [updated] = await Contenido.update(
       { valor: req.body.valor },

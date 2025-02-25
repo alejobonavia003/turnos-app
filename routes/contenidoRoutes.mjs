@@ -2,6 +2,7 @@ import express from 'express';
 const router = express.Router();
 import Contenido from '../models/Contenido.mjs';
 
+
 router.get('/', async (req, res) => {
   try {
     const contenidos = await Contenido.findAll();

@@ -14,9 +14,16 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Configura CORS para permitir tu frontend
+const corsOptions = {
+  origin: 'http://localhost:5000', // Cambia esto en producción
+  methods: 'GET,PUT,POST,DELETE',
+  allowedHeaders: 'Content-Type,Authorization'
+};
+
 // Configuración básica
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.static(path.join(__dirname, "/dist")));
 
 //comprobar conexion con base de datos

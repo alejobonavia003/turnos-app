@@ -39,9 +39,9 @@ app.use('/api/turnos', turnosRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/products', productsRoutes);
 
-// Ruta catch-all para React
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
+// Ruta catch-all para React Router
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 const PORT = process.env.PORT || 5000;

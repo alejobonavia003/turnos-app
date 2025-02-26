@@ -29,6 +29,9 @@ const corsOptions = {
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(express.static(path.join(__dirname, "/dist")));
+//app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+
+
 
 //comprobar conexion con base de datos
 sequelize

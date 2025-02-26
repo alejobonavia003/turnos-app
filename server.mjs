@@ -16,7 +16,11 @@ const app = express();
 
 // Configura CORS para permitir tu frontend
 const corsOptions = {
-  origin: 'http://localhost:5000', // Cambia esto en producción
+  origin: [
+    'http://localhost:5173', // Frontend local (Vite)
+    'http://localhost:5000', // Frontend antiguo (si aplica)
+    'https://tu-dominio-production.com' // Producción
+  ],
   methods: 'GET,PUT,POST,DELETE',
   allowedHeaders: 'Content-Type,Authorization'
 };

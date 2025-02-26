@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
 });
 
 //get http://localhost:5000/api/:clave devuelve un contenido por clave
-router.get('/api/:clave', async (req, res) => {
+router.get('/:clave', async (req, res) => {
   try {
     const contenido = await Contenido.findOne({ where: { clave: req.params.clave } });
     contenido ? res.json(contenido) : res.status(404).json({ error: "No encontrado" });
@@ -22,8 +22,9 @@ router.get('/api/:clave', async (req, res) => {
   }
 });
 
-//put http://localhost:5000/api/contenidos actualiza un contenido
-router.put('/api/:clave', async (req, res) => {
+//put http://localhost:5000/api/contenidos actualiza un contenido por clave
+router.put('/:clave', async (req, res) => {
+  console.log("contenido: " + req.body.valor);
   try {
     const [updated] = await Contenido.update(
       { valor: req.body.valor },

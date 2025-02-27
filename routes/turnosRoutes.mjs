@@ -7,8 +7,8 @@ import nodemailer from 'nodemailer';
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "mantis.servicios.lby@gmail.com",
-    pass: "ivdx ddca qmhm yynn",
+    user: "mantisespacio@gmail.com",
+    pass: "uamm ldbq pplh prwb",
   },
 });
 
@@ -16,17 +16,42 @@ const transporter = nodemailer.createTransport({
 // Envia un correo con los datos del turno
 router.post('/', async (req, res) => {
   try {
-    const { nombre, apellidos, email, telefono, horario, motivo } = req.body;
-    
-    await transporter.sendMail({
-      from: "mantis.servicios.lby@gmail.com",
-      to: "bonaviaalejo@gmail.com",
-      subject: "Nuevo turno solicitado",
-      text: `Nombre: ${nombre} ${apellidos}\nTeléfono: ${telefono}\nEmail: ${email}\nHorario: ${horario}\nMotivo: ${motivo}`
-    });
-    
+    const { nombre, apellidos, email, edad, residencia, disponibilidad, tipoSesion, frecuencia, conocio, dudas, telefono, horario, motivo } = req.body;
+
+    // Lista de correos a los que se enviará el mensaje
+    const recipients = ["macasanti23@gmail.com", "licflorenciavisconti@gmail.com "];
+
+    // Crear el contenido HTML del correo
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+        <h2 style="color: #4CAF50;">Nuevo turno solicitado</h2>
+        <p><strong>Nombre:</strong> ${nombre} ${apellidos}</p>
+        <p><strong>Edad:</strong> ${edad}</p>
+        <p><strong>Teléfono:</strong> ${telefono}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Lugar de residencia:</strong> ${residencia}</p>
+        <p><strong>Disponibilidad horaria:</strong> ${disponibilidad}</p>
+        <p><strong>Motivo de consulta:</strong> ${motivo}</p>
+        <p><strong>Tipo de sesión:</strong> ${tipoSesion}</p>
+        <p><strong>Frecuencia de sesiones:</strong> ${frecuencia}</p>
+        <p><strong>¿Dónde nos conoció?</strong> ${conocio}</p>
+        <p><strong>Dudas o comentarios adicionales:</strong> ${dudas}</p>
+      </div>
+    `;
+
+    // Enviar correo a cada destinatario
+    for (const recipient of recipients) {
+      await transporter.sendMail({
+        from: "mantisespacio@gmail.com",
+        to: recipient,
+        subject: "Nuevo turno solicitado",
+        html: htmlContent, // Usar HTML en lugar de texto plano
+      });
+    }
+
     res.status(200).json({ message: "Correo enviado con éxito" });
   } catch (error) {
+    console.error("Error al enviar el correo:", error);
     res.status(500).json({ message: "Error al enviar el correo" });
   }
 });

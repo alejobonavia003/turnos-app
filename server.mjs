@@ -44,7 +44,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/contenidos', contenidoRoutes);
 app.use('/api/turnos', turnosRoutes);
 app.use('/api/upload', uploadRoutes);
-app.use('/api/products', productsRoutes);
+app.use('/api/productos', productsRoutes);
+
 
 // Ruta catch-all para React Router
 app.get('*', (req, res) => {

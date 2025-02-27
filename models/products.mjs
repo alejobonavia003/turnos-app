@@ -1,31 +1,44 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.mjs';
 
-const Product = sequelize.define('Product', {
+const Product = sequelize.define('productos', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
   nombre: {
     type: DataTypes.STRING,
     allowNull: false
   },
   descripcion: {
     type: DataTypes.TEXT,
-    allowNull: false
+    allowNull: true
   },
   precio: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false
+
   },
   imagen_url: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true
   },
+   stock: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0
+  }, 
   categoria: {
     type: DataTypes.STRING(100),
-    allowNull: false
+    allowNull: true
   }
+
 }, {
   timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at'
+  createdAt: 'fecha_creacion',
+  updatedAt: 'updated_at',
+  tableName: 'productos'
 });
 
 export default Product;

@@ -1,81 +1,61 @@
 import express from 'express';
-const router = express.Router();
 import Product from '../models/products.mjs';
 
-// Middleware de autenticación admin
-const isAdmin = (req, res, next) => {
-  // Implementa tu lógica de autenticación aquí
-  // Ejemplo básico: verificar header de autenticación
-  const authHeader = req.headers.authorization;
-  if (authHeader === process.env.ADMIN_PASSWORD) return next();
-  res.status(401).json({ error: 'No autorizado' });
-};
+const router = express.Router();
 
 // Obtener todos los productos
 router.get('/', async (req, res) => {
   try {
-    const products = await Product.findAll();
-    res.json(products);
+    const productos = await Product.findAll();
+    res.json(productos);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: 'Error al obtener productos' });
   }
 });
 
-// Crear nuevo producto
-router.post('/', isAdmin, async (req, res) => {
+// Crear un nuevo producto
+router.post('/', async (req, res) => {
   try {
-    const productData = {
-      nombre: req.body.nombre,
-      descripcion: req.body.descripcion,
-      precio: parseFloat(req.body.precio),
-      imagen_url: req.body.imagen_url,
-      categoria: req.body.categoria
-    };
-
-    // Validación básica
-    if (!productData.nombre || !productData.precio) {
-      return res.status(400).json({ error: 'Campos requeridos faltantes' });
-    }
-
-    const newProduct = await Product.create(productData);
-    res.status(201).json(newProduct);
+    const { nombre, descripcion, precio, imagen_url, categoria, stock } = req.body;
+    const nuevoProducto = await Product.create({ nombre, descripcion, precio, imagen_url, categoria, stock });
+    res.status(201).json(nuevoProducto);
   } catch (error) {
-    res.status(400).json({ error: 'Error al crear producto' });
+    res.status(500).json({ error: 'Error al crear el producto' });
   }
 });
 
-// Actualizar producto
-router.put('/:id', isAdmin, async (req, res) => {
+// Actualizar un producto
+router.put('/:id', async (req, res) => {
   try {
-    const [updated] = await Product.update(req.body, {
-      where: { id: req.params.id }
-    });
-    
-    if (updated) {
-      const updatedProduct = await Product.findByPk(req.params.id);
-      res.json(updatedProduct);
-    } else {
-      res.status(404).json({ error: 'Producto no encontrado' });
+    const { id } = req.params;
+    const producto = await Product.findByPk(id);
+
+    if (!producto) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
     }
+
+    await producto.update(req.body);
+    res.json(producto);
   } catch (error) {
-    res.status(400).json({ error: 'Error al actualizar producto' });
+    res.status(500).json({ error: 'Error al actualizar el producto' });
   }
 });
 
-// Eliminar producto
-router.delete('/:id', isAdmin, async (req, res) => {
+// Eliminar un producto
+router.delete('/:id', async (req, res) => {
   try {
-    const deleted = await Product.destroy({
-      where: { id: req.params.id }
-    });
-    
-    if (deleted) {
-      res.json({ success: true });
-    } else {
-      res.status(404).json({ error: 'Producto no encontrado' });
+    const { id } = req.params;
+    const producto = await Product.findByPk(id);
+
+    if (!producto) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
     }
+
+    await producto.destroy();
+    res.json({ message: 'Producto eliminado' });
   } catch (error) {
-    res.status(500).json({ error: 'Error al eliminar producto' });
+    res.status(500).json({ error: 'Error al eliminar el producto' });
   }
 });
 

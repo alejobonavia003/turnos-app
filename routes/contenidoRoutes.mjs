@@ -24,7 +24,6 @@ router.get('/:clave', async (req, res) => {
 
 //put http://localhost:5000/api/contenidos actualiza un contenido por clave
 router.put('/:clave', async (req, res) => {
-  console.log("contenido: " + req.body.valor);
   try {
     const [updated] = await Contenido.update(
       { valor: req.body.valor },

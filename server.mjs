@@ -8,6 +8,7 @@ import contenidoRoutes from './routes/contenidoRoutes.mjs';
 import turnosRoutes from './routes/turnosRoutes.mjs';
 import uploadRoutes from './routes/uploadRoutes.mjs';
 import productsRoutes from './routes/productsRoutes.mjs';
+import blockRoutes from './routes/blockRoutes.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -45,6 +46,7 @@ app.use('/api/contenidos', contenidoRoutes);
 app.use('/api/turnos', turnosRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/productos', productsRoutes);
+app.use('/api/blocks', blockRoutes);
 
 
 // Ruta catch-all para React Router

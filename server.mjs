@@ -46,7 +46,7 @@ app.use('/api/contenidos', contenidoRoutes);
 app.use('/api/turnos', turnosRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/productos', productsRoutes);
-app.use('/api/blocks', blockRoutes);
+app.use('/api/blocks', blockRoutes);  
 
 
 // Ruta catch-all para React Router

@@ -1,73 +1,65 @@
 // routes/blockRoutes.js
 import express from 'express';
-import  Block  from "../models/Block.mjs"; // Asumiendo que usas index.js para importar modelos
+import Block from "../models/Block.mjs";
+import sequelize from '../config/db.mjs';
 const router = express.Router();
-import  sequelize  from '../config/db.mjs';
 
+// Middleware de autenticación (debes implementarlo)
+// router.use(authMiddleware);
 
-
-// GET: Listar todos los bloques
+// GET: Listar bloques por página
 router.get('/', async (req, res) => {
   try {
+    const whereClause = {};
+    
+    // Filtrar por página si viene en query params
+    if (req.query.page) {
+      whereClause.page = req.query.page;
+    }
+
     const blocks = await Block.findAll({
-      order: [['orderIndex', 'ASC']] // Ordenar por la columna real
+      where: whereClause,
+      order: [['orderIndex', 'ASC']]
     });
+    
     res.json(blocks);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// GET: Obtener un bloque por id
-router.get('/:id', async (req, res) => {
-  try {
-    const block = await Block.findByPk(req.params.id);
-    if (block) {
-      res.json(block);
-    } else {
-      res.status(404).json({ error: 'Bloque no encontrado' });
-    }
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// POST: Crear un nuevo bloque
+// POST: Crear bloque con gestión de orden
 router.post('/', async (req, res) => {
   const transaction = await sequelize.transaction();
   
   try {
-    // Validación básica
-    if (!req.body.type) {
+    const { type, page = 'home', configuration = {} } = req.body;
+
+    if (!type) {
       await transaction.rollback();
       return res.status(400).json({ error: "El tipo de bloque es requerido" });
     }
 
-    // Calcular orderIndex
-    const page = req.body.page || 'home';
-    
+    // Obtener último orderIndex de la misma página
     const lastBlock = await Block.findOne({
       where: { page },
-      order: [['order_index', 'DESC']],
+      order: [['orderIndex', 'DESC']],
       transaction
     });
 
     const newOrderIndex = (lastBlock?.orderIndex || 0) + 1;
 
-    // Crear bloque
     const newBlock = await Block.create({
-      type: req.body.type,
-      page: page,
-      configuration: req.body.configuration || {},
+      type,
+      page,
+      configuration,
       orderIndex: newOrderIndex
     }, { transaction });
 
     await transaction.commit();
-    
     res.status(201).json(newBlock);
   } catch (error) {
     await transaction.rollback();
-    console.error('Error:', error);
     res.status(500).json({
       error: 'Error al crear bloque',
       details: error.errors?.map(e => e.message) || error.message
@@ -75,34 +67,61 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT: Actualizar un bloque existente
-router.put('/:id', async (req, res) => {
-  //console.log("Datos recibidos en PUT:", req.body); // Para depuración
+// actualizacion masiva de bloques
+router.put('/bulk-update', async (req, res) => {
   try {
-    const { type, configuration, orderIndex, page } = req.body;
+    const transaction = await sequelize.transaction();
+    
+    const updatePromises = req.body.blocks.map(block => 
+      Block.update(
+        { orderIndex: block.orderIndex },
+        { where: { id: block.id }, transaction }
+      )
+    );
+
+    await Promise.all(updatePromises);
+    await transaction.commit();
+    
+    res.json({ message: 'Orden actualizado exitosamente' });
+  } catch (error) {
+    await transaction.rollback();
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// PUT: Actualizar bloque (versión simplificada)
+router.put('/:id', async (req, res) => {
+  try {
     const block = await Block.findByPk(req.params.id);
-    if (block) {
-      await block.update({ type, configuration, orderIndex, page });
-      res.json(block);
-    } else {
-      res.status(404).json({ error: 'Bloque no encontrado' });
+    
+    if (!block) {
+      return res.status(404).json({ error: 'Bloque no encontrado' });
     }
+
+    // Actualizar solo los campos permitidos
+    const updatedBlock = await block.update({
+      configuration: req.body.configuration,
+      orderIndex: req.body.orderIndex,
+      page: req.body.page
+    });
+
+    res.json(updatedBlock);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-
-// DELETE: Eliminar un bloque
+// DELETE: Eliminar bloque (versión simplificada)
 router.delete('/:id', async (req, res) => {
   try {
     const block = await Block.findByPk(req.params.id);
-    if (block) {
-      await block.destroy();
-      res.json({ message: 'Bloque eliminado' });
-    } else {
-      res.status(404).json({ error: 'Bloque no encontrado' });
+    
+    if (!block) {
+      return res.status(404).json({ error: 'Bloque no encontrado' });
     }
+
+    await block.destroy();
+    res.json({ message: 'Bloque eliminado' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

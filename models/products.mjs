@@ -11,7 +11,11 @@ const Product = sequelize.define('productos', {
     type: DataTypes.STRING,
     allowNull: false
   },
-  descripcion: {
+  descripcion_corta: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  descripcion_larga: {
     type: DataTypes.TEXT,
     allowNull: true
   },
@@ -20,15 +24,16 @@ const Product = sequelize.define('productos', {
     allowNull: false
 
   },
-  imagen_url: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
    stock: {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0
   }, 
+  galeria_imagenes: {
+    type: DataTypes.JSONB, // Almacenará un array de URLs
+    allowNull: true,
+    defaultValue: []
+  },
   categoria: {
     type: DataTypes.STRING(100),
     allowNull: true

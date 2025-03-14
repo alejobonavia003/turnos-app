@@ -14,11 +14,37 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Obtener un producto por su ID
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const producto = await Product.findByPk(id);
+
+    if (!producto) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
+    res.json(producto);
+  } catch (error) {
+    console.error('Error al obtener el producto:', error);
+    res.status(500).json({ error: 'Error al obtener el producto' });
+  }
+});
+
+
 // Crear un nuevo producto
 router.post('/', async (req, res) => {
   try {
-    const { nombre, descripcion, precio, imagen_url, categoria, stock } = req.body;
-    const nuevoProducto = await Product.create({ nombre, descripcion, precio, imagen_url, categoria, stock });
+    const { nombre, descripcion_corta, descripcion_larga, precio, galeria_imagenes, categoria, stock } = req.body;
+    const nuevoProducto = await Product.create({ 
+      nombre, 
+      descripcion_corta, 
+      descripcion_larga, 
+      precio, 
+      galeria_imagenes, 
+      categoria, 
+      stock 
+    });
     res.status(201).json(nuevoProducto);
   } catch (error) {
     res.status(500).json({ error: 'Error al crear el producto' });
@@ -35,7 +61,10 @@ router.put('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Producto no encontrado' });
     }
 
-    await producto.update(req.body);
+    await producto.update({
+      ...req.body,
+      galeria_imagenes: req.body.galeria_imagenes || []
+    });
     res.json(producto);
   } catch (error) {
     res.status(500).json({ error: 'Error al actualizar el producto' });

@@ -60,6 +60,7 @@ router.post('/', authenticate, async (req, res) => {
       error: 'Error al crear psicólogo',
       details: error.errors?.map(e => e.message) || error.message
     });
+    console.log(error);
   }
 });
 

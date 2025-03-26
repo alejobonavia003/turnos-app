@@ -33,7 +33,7 @@ router.post('/', async (req, res) => {
         <p><strong>Lugar de residencia:</strong> ${residencia}</p>
         <p><strong>Disponibilidad horaria:</strong> ${disponibilidad}</p>
         <p><strong>Motivo de consulta:</strong> ${motivo}</p>
-        <p><strong>Tipo de sesión:</strong> ${tipoSesion}</p>
+        <p><strong>Prefiere a:</strong> ${tipoSesion}</p>
         <p><strong>Frecuencia de sesiones:</strong> ${frecuencia}</p>
         <p><strong>¿Dónde nos conoció?</strong> ${conocio}</p>
         <p><strong>Dudas o comentarios adicionales:</strong> ${dudas}</p>

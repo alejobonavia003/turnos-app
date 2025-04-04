@@ -10,6 +10,7 @@ import uploadRoutes from './routes/uploadRoutes.mjs';
 import productsRoutes from './routes/productsRoutes.mjs';
 import blockRoutes from './routes/blockRoutes.mjs';
 import psychologistRoutes from './routes/psychologistRoutes.mjs';
+import ComentariosRoutes from './routes/comentariosRoute.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -51,6 +52,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/productos', productsRoutes);
 app.use('/api/blocks', blockRoutes);  
 app.use('/api/psychologists', psychologistRoutes);
+app.use('/api/reviews', ComentariosRoutes);
 
 
 // Ruta catch-all para React Router
@@ -64,3 +66,5 @@ const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
+

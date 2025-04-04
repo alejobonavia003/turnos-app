@@ -9,7 +9,6 @@ router.get('/', async (req, res) => {
     const productos = await Product.findAll();
     res.json(productos);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: 'Error al obtener productos' });
   }
 });

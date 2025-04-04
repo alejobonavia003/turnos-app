@@ -72,10 +72,6 @@ router.put('/:id', authenticate, async (req, res) => {
     if (!psychologist) {
       return res.status(404).json({ error: 'Psicólogo no encontrado' });
     }
-    console.log("cuearpo de la peticion: " + req.body.email);
-    console.log("cuearpo de la peticion: " + req.body.telefono);
-    console.log("cuearpo de la peticion: " + req.body.especializacion);
-    console.log("id: " + req.params.id);
     const updated = await psychologist.update(req.body);
     res.json(updated);
   } catch (error) {

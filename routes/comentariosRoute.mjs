@@ -25,14 +25,6 @@ router.get('/', async (req, res) => {
         }
         res.json(response.data.result.reviews || []);
     
-/**        res.json([
-            {
-                author_name: "Usuario de prueba",
-                rating: 5,
-                text: "Esta es una reseña de prueba generada por el backend.",
-                time: new Date().toISOString()
-            }
-        ]); */
 
     } catch (error) {
         console.error("Error al obtener reseñas:", error.message);

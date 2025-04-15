@@ -17,7 +17,8 @@ router.get('/', async (req, res) => {
             return res.status(500).json({ error: "Faltan variables de entorno" });
         }
 
-        const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=reviews&key=${apiKey}`;
+        const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=reviews&key=${apiKey}&language=es`;
+
         const response = await axios.get(url);
 
         if (response.data.status !== "OK") {

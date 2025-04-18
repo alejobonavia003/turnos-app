@@ -57,4 +57,39 @@ router.post('/', async (req, res) => {
   }
 });
 
+// POST /api/materiales
+// Envia un correo con los datos del material solicitado
+router.post('/materiales', async (req, res) => {
+  try {
+    const { nombre, apellido, telefono, email, material, conocio } = req.body;
+
+    const recipients = ["bonaviaalejo@gmail.com", "alejobonavia003i@gmail.com "];
+
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+        <h2 style="color: #4CAF50;">Nuevo pedido de material</h2>
+        <p><strong>Nombre:</strong> ${nombre} ${apellido}</p>
+        <p><strong>Teléfono:</strong> ${telefono}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Material solicitado:</strong> ${material}</p>
+        <p><strong>¿Dónde nos conoció?:</strong> ${conocio}</p>
+      </div>
+    `;
+
+    for (const recipient of recipients) {
+      await transporter.sendMail({
+        from: "mantisespacio@gmail.com",
+        to: recipient,
+        subject: "Nuevo pedido de material",
+        html: htmlContent,
+      });
+    }
+
+    res.status(200).json({ message: "Correo enviado con éxito" });
+  } catch (error) {
+    console.error("Error al enviar el correo:", error);
+    res.status(500).json({ message: "Error al enviar el correo" });
+  }
+});
+
 export default router;

@@ -7,6 +7,26 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const router = express.Router();
+const deleteLimits = {}; // Objeto en memoria para rastrear eliminaciones por día
+
+
+// Función auxiliar para intentar eliminar un recurso como image, video o raw
+const tryDelete = async (public_id) => {
+  const types = ['image', 'video', 'raw'];
+  for (const type of types) {
+    const result = await cloudinary.uploader.destroy(public_id, {
+      resource_type: type,
+      invalidate: true,
+    });
+
+    if (result.result === 'ok' || result.result === 'not found') {
+      return { type, result };
+    }
+  }
+
+  throw new Error('No se pudo eliminar el recurso');
+};
+
 
 // Configurar Cloudinary con tus credenciales
 cloudinary.config({
@@ -59,15 +79,40 @@ router.get('/', async (req, res) => {
   }
 });
 
+
 // Endpoint para eliminar una imagen en Cloudinary usando su public_id
 router.delete('/:public_id', async (req, res) => {
-  const { public_id } = req.params;
+  const userIp = req.ip; // Usamos la IP del usuario como identificador
+  const today = new Date().toISOString().split('T')[0]; // Fecha actual (YYYY-MM-DD)
+
+  // Inicializar el contador si no existe
+  if (!deleteLimits[userIp]) {
+    deleteLimits[userIp] = {};
+  }
+  if (!deleteLimits[userIp][today]) {
+    deleteLimits[userIp][today] = 0;
+  }
+
+  // Verificar si el usuario ha alcanzado el límite
+  if (deleteLimits[userIp][today] >= 10) {
+    return res.status(429).json({
+      error: 'Has alcanzado el límite de 10 imágenes eliminadas por día.',
+    });
+  }
+
+  let { public_id } = req.params;
+
+  if (public_id.startsWith('Mantis-APP/')) {
+    public_id = public_id.replace('Mantis-APP/', '');
+  }
+
   try {
-    const result = await cloudinary.uploader.destroy(public_id);
-    res.json({ message: 'Imagen eliminada', result });
+    const { type, result } = await tryDelete(`Mantis-APP/${public_id}`);
+    deleteLimits[userIp][today] += 1; // Incrementar el contador
+    res.json({ message: `Imagen eliminada como tipo ${type}`, result });
   } catch (error) {
-    console.error("Error al eliminar imagen en Cloudinary:", error);
-    res.status(500).json({ error: 'Error al eliminar la imagen' });
+    console.error('Error al eliminar imagen en Cloudinary:', error);
+    res.status(500).json({ error: 'Error al eliminar la imagen', details: error.message });
   }
 });
 

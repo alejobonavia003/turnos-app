@@ -1,6 +1,5 @@
 {
   "name": "Mantis",
-  "private": true,
   "scripts": {
     "build": "cd client && npm install && npm run build",
     "start": "cd server && npm install && node server.mjs"
